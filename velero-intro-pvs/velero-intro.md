@@ -87,7 +87,7 @@ command, we will only install Velero components.
 
 We will be using a local minikube cluster for the demo, including for CSI features.
 
-``` bash
+```bash
 
 # Optional: Create minikube cluster called "velero" to be used for the demo.
 $ minikube -p velero start
@@ -119,18 +119,17 @@ with the credentials. Create a file called "aws-creds" in the following format::
     aws_access_key_id=<ACCESS_KEY>
     aws_secret_access_key=<SECRET_KEY>
 
-``` bash
+```bash
 $ kubectl -n velero create secret generic aws-creds --from-file=aws=aws-creds
 
 $ velero backup-location create --bucket velero-demo --credential aws-creds=aws \
-    --provider aws --config region=us-east-1 aws-velero-intro
+    --provider aws --config region=us-east-1 aws-demo
 
 # List BSLs.
 $ velero backup-location get
 
 # Similar but with kubectl
 $ kubectl -n velero get bsl
-
 ```
 
 ---
@@ -139,12 +138,14 @@ $ kubectl -n velero get bsl
 
 - Velero includes the specs of all the selected resources in the backup in the form of a tar file. 
 
-- Resources can be selected by namespaces, resource types, and labels. 
+- Resources can be selected by namespaces, resource types, and labels.
 
 Note:
 
-``` bash
-$ velero backup create --storage-location aws-velero-intro basic-backup
+
+```bash
+# Create a basic backup comprising of resources.
+$ velero backup create --storage-location aws-demo basic-backup
 
 # To see the status of the backup
 $ velero backup get basic-backup
@@ -158,11 +159,9 @@ $ velero backup describe --details basic-backup
 # To see the logs of the backup
 $ velero backup logs basic-backup
 
-```
+# Velero creates hierarchy of files on the target storage. 
+# Here is what you may see after above backup:
 
-Velero creates hierarchy of files on the target storage. Here is what you will see after above backup:
-
-```bash
     29 backups/basic-backup/basic-backup-csi-volumesnapshotclasses.json.gz
     29 backups/basic-backup/basic-backup-csi-volumesnapshotcontents.json.gz
     29 backups/basic-backup/basic-backup-csi-volumesnapshots.json.gz
@@ -172,7 +171,9 @@ Velero creates hierarchy of files on the target storage. Here is what you will s
     29 backups/basic-backup/basic-backup-volumesnapshots.json.gz
 112790 backups/basic-backup/basic-backup.tar.gz
   2557 backups/basic-backup/velero-backup.json
+
 ```
+
 ---
 
 ## CSI
@@ -212,6 +213,7 @@ Velero creates hierarchy of files on the target storage. Here is what you will s
 
 Note:
 
+
 ```bash
 
 # Using the CSI verification script from CloudCasa.
@@ -219,9 +221,7 @@ Note:
 $ curl -s https://raw.githubusercontent.com/catalogicsoftware/cloudcasa-artifacts/master/scripts/cloudcasa-csi-checker.sh | bash 2>&1 - | tee storage.txt
 
 # To enable CSI on the minikube cluster
-
 $ minikube -p velero addons enable volumesnapshots
-
 $ minikube -p velero addons enable csi-hostpath-driver
 
 ```
@@ -238,7 +238,8 @@ $ minikube -p velero addons enable csi-hostpath-driver
 
 Note:
 
-``` bash
+
+```bash
 
 # create a CSI PVC and a Pod with that PVC.
 $ kubectl apply -f csi-pod.yaml
@@ -254,15 +255,22 @@ $ date > /data/testfile
 
 # Label volume snapshot class so that Velero knows which one to pick.
 $ kubectl label volumesnapshotclass csi-hostpath-snapclass velero.io/csi-volumesnapshot-class=true
+# Make sure that the deletion policy is "Retain"
+
+# Set this flag so that CSI details are shown in "describe"
+# velero client config set features=EnableCSI
 
 # Create CSI backup.
-$ velero backup create --storage-location aws-velero-intro csi-backup
+$ velero backup create --storage-location aws-demo csi-backup
 
 # Check backup progress
 $ velero backup get csi-backup
 
-# After backup is done, confirm that snapshots are created.
-$ kubectl get -A volumesnapshot
+# Show backup details
+# velero backup describe csi-backup
+# velero backup describe --details csi-backup
+
+# After backup is done, confirm that snapshot is created.
 $ kubectl get volumesnapshotcontent
 
 # Restore the namespace "testapp-csi" to a new namespace "restore-csi".
@@ -307,10 +315,10 @@ $ cat /data/testfile
 
 Note:
 
+
 ```bash
 # Create a backup that will use Restic to backup PVs.
-$ velero backup create --storage-location aws-velero-intro \
-        --default-volumes-to-fs-backup=true fs-backup
+$ velero backup create --storage-location aws-demo --default-volumes-to-fs-backup=true fs-backup
         
 # Check backup progress
 $ velero backup get fs-backup
@@ -318,7 +326,7 @@ $ velero backup get fs-backup
 
 You can see "restic" objects created in the bucket, like so:
 
-``` bash
+```bash
      29 backups/fs-backup/fs-backup-csi-volumesnapshotclasses.json.gz
      29 backups/fs-backup/fs-backup-csi-volumesnapshotcontents.json.gz
      29 backups/fs-backup/fs-backup-csi-volumesnapshots.json.gz
@@ -399,4 +407,3 @@ $ cat /data/testfile
 
 - But you may need to implement few scripts/tools to effectively manage multiple clusters.
 
----
