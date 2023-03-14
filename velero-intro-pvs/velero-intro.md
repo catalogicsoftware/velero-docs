@@ -10,6 +10,16 @@ reveal.js (https://github.com/hakimel/reveal.js/) framework.
 
 ---
 
+## Agenda
+
+- Introduction
+- Installation
+- CSI configuration
+- CSI backups and restores
+- File system backups and restores
+
+---
+
 ## Introduction
 
 - Velero is a very popular open source Kubernetes backup tool.
