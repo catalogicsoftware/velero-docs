@@ -400,9 +400,3 @@ $ cat /data/testfile
 - But you may need to implement few scripts/tools to effectively manage multiple clusters.
 
 ---
-
-## KubeCon Europe
-
-<img src="velero/KubeCon_EU_2023_WebGraphics2_snackable.jpg" alt="KubeCon Europe 2023" width="700" height="450" />
-
----
