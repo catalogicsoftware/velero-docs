@@ -1,0 +1,45 @@
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testapp-csi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: testapp-storage
+  namespace: testapp-csi
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: csi-hostpath-sc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testapp
+  namespace: testapp-csi
+spec:
+  volumes:
+  - name: testapp-storage
+    persistentVolumeClaim:
+      claimName: testapp-storage
+  containers:
+  - name: testapp
+    image: busybox:latest
+    imagePullPolicy: IfNotPresent
+    args:
+    - sh
+    - -c
+    - "sleep 10000"
+    volumeMounts:
+    - name: testapp-storage
+      mountPath: "/data"
+
