@@ -244,7 +244,7 @@ $ minikube -p velero addons enable csi-hostpath-driver
   - For each CSI driver, you need to have a *VolumeSnapshotClass* with the deletion policy set to "Retain". 
   - Set label ``velero.io/csi-volumesnapshot-class=true``.
 
-- Restore works <by creating PVCs from CSI snapshots.
+- Restore works by creating PVCs from CSI snapshots.
 
 Note:
 
@@ -416,4 +416,5 @@ $ cat /data/testfile
 - Velero is a popular open source option to protect data in a Kubernetes cluster. 
 
 - But you may need to implement few scripts/tools to effectively manage multiple clusters.
+
 
