@@ -115,7 +115,7 @@ custom namespace by passing the value with the option *--namespace*.
 
 ## Configure backup storage
 
-- The resource *BackupStorageLocation* encapsulates backup storage which is typically S3 compatible bucket (or Azure
+- The resource *BackupStorageLocation* encapsulates backup storage which is typically a S3 compatible bucket (or Azure
   blob storage). 
 
 - It can be directly created using *kubectl* or by using *velero* CLI.
@@ -244,7 +244,7 @@ $ minikube -p velero addons enable csi-hostpath-driver
   - For each CSI driver, you need to have a *VolumeSnapshotClass* with the deletion policy set to "Retain". 
   - Set label ``velero.io/csi-volumesnapshot-class=true``.
 
-- It is also possible to "restore" by creating PVCs from CSI snapshots.
+- Restore works <by creating PVCs from CSI snapshots.
 
 Note:
 
@@ -319,7 +319,7 @@ $ cat /data/testfile
 
   - Both support compression, deduplication, and encryption though there are some caveats. 
 
-- File system backups are only way for PVs that do not support snapshots. E.g NFS and EFS.
+- File system backups are the only option for PVs that do not support snapshots. E.g NFS and EFS.
 
 - Snapshot and file system backups cannot be combined.
 
@@ -399,9 +399,9 @@ $ cat /data/testfile
 
 ---
 
-## Resources
+## Links
 
-- https://velero.io/docs/v1.10/
+- https://velero.io/docs/
 
 - https://restic.net/
 
