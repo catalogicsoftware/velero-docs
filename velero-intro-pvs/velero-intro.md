@@ -104,7 +104,7 @@ $ minikube -p velero start
 
 $ velero install \
     --plugins velero/velero-plugin-for-aws:v1.6.1,velero/velero-plugin-for-csi:v0.4.2 \
-    --use-node-agent --features=enableCSI \
+    --use-node-agent --features=EnableCSI \
     --no-default-backup-location --no-secret --use-volume-snapshots=false
 ```
 
